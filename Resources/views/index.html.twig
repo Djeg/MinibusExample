@@ -1,0 +1,14 @@
+{% extends '::base.html.twig' %}
+
+{% block body %}
+    {% if articles is empty %}
+        <p>Youps no article has been written yet ^.^</p>
+    {% else %}
+       {% for article in articles %}
+            <section>
+                <h2><a href="{{ path('super_blog_show', {'id': article.id}) }}">{{ article.name }}</a></h2>
+                <p>{{ article.preview|raw }}</p>
+            </section>
+       {% endfor %}
+    {% endif %}
+{% endblock %}

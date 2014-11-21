@@ -1,0 +1,35 @@
+super_blog_index:
+    pattern: /
+    method: GET
+    line:
+        super_blog.trending_blogs: ~
+    terminus:
+        twig_template:
+            path: "SuperBlogBundle::index.html.twig"
+
+super_blog_new:
+    pattern: /articles/new
+    method: GET
+    line:
+        super_blog.article_edition: ~
+    terminus:
+        twig_template:
+            path: "SuperBlogBundle::edit.html.twig"
+
+super_blog_create:
+    pattern: /articles
+    method: POST|PUT|PATCH
+    line:
+        super_blog.article_edition: ~
+    terminus:
+        redirection:
+            route: super_blog_new
+
+super_blog_show:
+    pattern: /articles/{id}
+    method: GET
+    line:
+        super_blog.fetch_article: ~
+    terminus:
+        twig_template:
+            path: "SuperBlogBundle::show.html.twig"

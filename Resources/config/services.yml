@@ -1,0 +1,55 @@
+services:
+    # some expected terminus
+    super_blog.terminus.redirection_terminus:
+        class: Super\BlogBundle\Terminus\RedirectionTerminus
+        arguments: [@router]
+        tags:
+            - { name: knp_minibus.terminus, alias: redirection }
+
+    # some sugar solid services
+    super_blog.solid.repository_factory:
+        class: Super\BlogBundle\Solid\RepositoryFactory
+        arguments: [@doctrine.orm.entity_manager]
+    super_blog.solid.form_creator:
+        class: Super\BlogBundle\Solid\FormCreator
+        arguments: [@form.factory, @request_stack]
+    super_blog.solid.notifier:
+        class: Super\BlogBundle\Solid\Notifier\FlashNotifier
+        arguments: [@session]
+    super_blog.solid.persister:
+        class: Super\BlogBundle\Solid\Persister\DoctrinePersister
+        arguments: [@doctrine.orm.entity_manager]
+
+    # repository services
+    super_blog.repository.article_repository:
+        class: Super\BlogBundle\Repository\ArticleRepository
+        factory_service: super_blog.solid.repository_factory
+        factory_method: create
+        arguments: ["SuperBlogBundle:Article"]
+
+    # stations
+    super_blog.station.trending_blogs:
+        class: Super\BlogBundle\Station\TrendingBlogsStation
+        arguments: [@super_blog.repository.article_repository]
+        tags:
+            - { name: knp_minibus.station, alias: super_blog.trending_blogs }
+    super_blog.station.article_edition:
+        class: Super\BlogBundle\Station\ArticleEditionStation
+        arguments:
+            - @super_blog.solid.form_creator
+            - @super_blog.solid.persister
+            - @super_blog.solid.notifier
+        tags:
+            - { name: knp_minibus.station, alias: super_blog.article_edition }
+    super_blog.station.fetch_article:
+        class: Super\BlogBundle\Station\FetchArticleStation
+        arguments: [@super_blog.repository.article_repository]
+        tags:
+            - { name: knp_minibus.station, alias: super_blog.fetch_article }
+
+    # forms
+    super_blog.form.type.edit_article:
+        class: Super\BlogBundle\Form\Type\EditArticleType
+        arguments: [@router]
+        tags:
+            - { name: form.type, alias: edit_article }
